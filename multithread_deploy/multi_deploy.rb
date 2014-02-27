@@ -37,12 +37,8 @@ hosts_file.each_line do |line|
     func(line.chomp)
   end
   #wait until total threads goes below maximum allowed threads
-  while Thread.list.size > max_concurrent_threads do
-    sleep 1
-  end
+  sleep 1 while Thread.list.size > max_concurrent_threads
 end
 #wait for the rest of the threads to finish
-while Thread.list.size > 1 do
-  sleep 1
-end
+sleep 1 while Thread.list.size > 1
 hosts_file.close
