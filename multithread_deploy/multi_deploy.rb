@@ -24,8 +24,18 @@ def func(host)
       log.info "ping successful."
     end
   end
-  Net::SCP.start(host,"root",:password => "password") do |scp|
-    scp.upload! "/source/file/path", "/destination/file/path"
+  begin
+    Net::SCP.start(host, "root", :password => "password") do |scp|
+      scp.upload! "/source/file/path", "/destination/file/path"
+    end
+  rescue Timeout::Error => e
+     log.error("Timed out. #{e}")
+  rescue Errno::EHOSTUNREACH => e
+    log.error("Host unreachable. #{e}")
+  rescue Errno::ECONNREFUSED => e
+      log.error("Connection refused. #{e}")
+  rescue Net::SSH::AuthenticationFailed => e
+      log.error("Authentication failure. #{e}")
   end
 end
 
